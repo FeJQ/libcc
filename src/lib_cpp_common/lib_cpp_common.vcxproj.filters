@@ -11,21 +11,59 @@
     <Filter Include="test">
       <UniqueIdentifier>{fad7214d-f4d3-42e1-b3bc-a0ddf6f3bf5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="crypto">
+      <UniqueIdentifier>{d6f44e1d-e4ba-4137-a183-b58fcf836b88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="element">
+      <UniqueIdentifier>{a094ee0b-13d2-4c2c-9cfe-37af85a79c36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="network\HttpClient.hpp">
       <Filter>network</Filter>
     </ClInclude>
-    <ClInclude Include="test\BaseTest.hpp">
+    <ClInclude Include="test\BaseTest.h">
       <Filter>test</Filter>
     </ClInclude>
-    <ClInclude Include="test\HttpClientTest.hpp">
+    <ClInclude Include="test\NetworkTest.h">
       <Filter>test</Filter>
     </ClInclude>
-    <ClInclude Include="Dict.hpp" />
-    <ClInclude Include="Elem.hpp" />
-    <ClInclude Include="List.hpp" />
     <ClInclude Include="StringConverter.h" />
+    <ClInclude Include="crypto\Padding.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Rsa.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\UrlCoding.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Xxhash.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Aes.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Base64.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Curve.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Md5.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="container\Dict.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="container\Elem.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="container\List.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="test\ElementTest.h" />
+    <ClInclude Include="test\CryptoTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />

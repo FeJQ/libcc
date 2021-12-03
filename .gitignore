@@ -4,3 +4,5 @@ src/lib_cpp_common/x64
 workspace/.vs
 workspace/Debug
 workspace/Release
+
+build

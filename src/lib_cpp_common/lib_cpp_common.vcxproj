@@ -19,13 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dict.hpp" />
-    <ClInclude Include="Elem.hpp" />
-    <ClInclude Include="List.hpp" />
+    <ClInclude Include="container\Dict.hpp" />
+    <ClInclude Include="container\Elem.hpp" />
+    <ClInclude Include="container\List.hpp" />
+    <ClInclude Include="crypto\Aes.hpp" />
+    <ClInclude Include="crypto\Base64.hpp" />
+    <ClInclude Include="crypto\Curve.hpp" />
+    <ClInclude Include="crypto\Md5.hpp" />
+    <ClInclude Include="crypto\Padding.hpp" />
+    <ClInclude Include="crypto\Rsa.hpp" />
+    <ClInclude Include="crypto\UrlCoding.hpp" />
+    <ClInclude Include="crypto\Xxhash.hpp" />
     <ClInclude Include="network\HttpClient.hpp" />
     <ClInclude Include="StringConverter.h" />
-    <ClInclude Include="test\BaseTest.hpp" />
-    <ClInclude Include="test\HttpClientTest.hpp" />
+    <ClInclude Include="test\BaseTest.h" />
+    <ClInclude Include="test\CryptoTest.h" />
+    <ClInclude Include="test\ElementTest.h" />
+    <ClInclude Include="test\NetworkTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -84,21 +94,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)../sdk/win32/network;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)..\build\temp\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)..\build\$(Configuration)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)../sdk/win32/network;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)..\build\temp\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)..\build\$(Configuration)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)..\build\temp\$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)..\build\$(Platform)\$(Configuration)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)..\build\temp\$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)..\build\$(Platform)\$(Configuration)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -106,6 +120,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +135,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +150,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +165,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
