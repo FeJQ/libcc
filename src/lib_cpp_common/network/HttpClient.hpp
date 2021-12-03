@@ -6,37 +6,59 @@
 #include "curl/curl.h"
 #include <assert.h>
 
-#ifndef CCString
+#ifdef __APPLE__
+#include <unistd.h>
+#include <sys/stat.h>
+#include <exception>
+#endif
+
+// -----Win-----
 #ifdef _WIN32
+
+// CCString
+#ifndef CCString
 #define CCString wstring
 #endif
-#elif defined __APPLE__
-#define CCString string
-#endif 
 
+// CCChar
 #ifndef CCChar
-#ifdef _WIN32
 #define CCChar wchar_t
 #endif
-#elif defined __APPLE__
-#define CCChar char
-#endif 
 
+// CCAccess
 #ifndef CCAccess
-#ifdef _WIN32
 #define CCAccess _waccess
 #endif
+
+// CCMkdir
+#ifndef CCMkdir
+#define CCMkdir(x) _wmkdir(x)
+#endif
+
+
+// ----Apple------
 #elif defined __APPLE__
+
+#ifndef CCString
+#define CCString string
+#endif
+
+#ifndef CCChar
+#define CCChar char
+#endif
+
+#ifndef CCAccess
 #define CCAccess access
-#endif 
+#endif
 
 #ifndef CCMkdir
-#ifdef _WIN32
-#define CCMkdir _wmkdir
+#define CCMkdir(x) ::mkdir(x,0777)
 #endif
-#elif defined __APPLE__
-#define CCMkdir mkdir
+
 #endif 
+
+
+
 
 
 
@@ -360,7 +382,7 @@ namespace libcc
 						if (CCAccess(tmpDirPath, 0) == -1)
 						{
 							int ret = CCMkdir(tmpDirPath);
-							if (ret == -1) throw std::exception("mkdir error");
+							assert(ret != -1);
 						}
 					}
 				}
@@ -395,8 +417,7 @@ namespace libcc
 			{
 				CURLcode code;
 				code = curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent.c_str());
-				if (code != CURLE_OK)
-					throw std::exception(string(curl_easy_strerror(code) + std::to_string(code)).c_str());
+				assert(code == CURLE_OK);
 				return *this;
 			}
 
