@@ -118,6 +118,13 @@ namespace libcc
 			HTTPVersionNotSupported = 505
 		};
 
+		enum class HtmlEnctype
+		{
+			application_x_www_urlencoded,
+			multipart_form_data,
+			text_plain
+		};
+
 		class Response
 		{
 		public:
@@ -316,7 +323,7 @@ namespace libcc
 				assert(code == CURLE_OK);
 				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
 				assert(code == CURLE_OK);
-				curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, postData.length());
+				curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, postData.size());
 				assert(code == CURLE_OK);
 				code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, postData.data());
 				assert(code == CURLE_OK);
@@ -337,22 +344,57 @@ namespace libcc
 			  * @param formDataMap 表单数据，如{"key","value"}
 			  * @return Response
 			  */
-			Response post(string url, map<string, string> formDataMap)
+			Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data)
 			{
 				status = HttpStatus::OK;
 				this->response.clear();
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
 				assert(code == CURLE_OK);
+				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				assert(code == CURLE_OK);
+
 				struct curl_httppost* form = NULL;
 				struct curl_httppost* last = NULL;
 
+				string formData;
+
 				/* build form */
-				for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+
+				switch (enctype)
 				{
-					curl_formadd(&form, &last, CURLFORM_COPYNAME, i->first.c_str(), CURLFORM_COPYCONTENTS, i->second.c_str(), CURLFORM_END);
+				case libcc::network::HtmlEnctype::application_x_www_urlencoded:
+				{
+					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+					{
+						formData += (i == formDataMap.begin() ? "" : "&") + escape(i->first) + "=" + escape(i->second);
+					}
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, formData.size());
+					assert(code == CURLE_OK);
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, formData.data());
+					assert(code == CURLE_OK);
+					break;
 				}
-				code = curl_easy_setopt(this->curl, CURLOPT_HTTPPOST, form);
-				assert(code == CURLE_OK);
+				case libcc::network::HtmlEnctype::multipart_form_data:
+					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+					{
+						curl_formadd(&form, &last, CURLFORM_COPYNAME, i->first.c_str(), CURLFORM_COPYCONTENTS, i->second.c_str(), CURLFORM_END);
+					}
+					code = curl_easy_setopt(this->curl, CURLOPT_HTTPPOST, form);
+					assert(code == CURLE_OK);
+					break;
+				case libcc::network::HtmlEnctype::text_plain:
+					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+					{
+						formData += (i == formDataMap.begin() ? "" : "&") + i->first + "=" + i->second;
+					}
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, formData.size());
+					assert(code == CURLE_OK);
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, formData.data());
+					assert(code == CURLE_OK);
+					break;
+				default:
+					throw;
+				}
 
 				/* perform request */
 				code = curl_easy_perform(this->curl);
