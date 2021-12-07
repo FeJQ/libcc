@@ -525,7 +525,14 @@ namespace libcc
 				curl_free(e_content);
 				return result;
 			}
-
+			string unescape(string content)
+			{
+				int len;
+				char* e_content = curl_easy_unescape(curl, content.c_str(), content.length(),&len);
+				std::string result = string(e_content,len);
+				curl_free(e_content);
+				return result;
+			}
 
 		private:
 			static size_t writeCallback(void* data, size_t size, size_t nmemb, void* userData)
