@@ -3,11 +3,13 @@
 #include "network/HttpClient.hpp"
 #include <string>
 #include <curl/curl.h>
+#include <map>
 
 namespace libcc
 {
 	namespace test
 	{
+		using network::HtmlEnctype;
 		using network::HttpClient;
 		using network::Response;
 		using std::string;
@@ -15,6 +17,7 @@ namespace libcc
 		using std::cout;
 		using std::wcout;
 		using std::endl;
+		using std::map;
 
 		static size_t receive_data(void* contents, size_t size, size_t nmemb, void* stream) {
 			string* str = (string*)stream;
@@ -28,9 +31,30 @@ namespace libcc
 			virtual bool entry()
 			{
 				bool result = true;
+				result &= youdaoTranlate();
 				result &= googleTranslate();
 				return result;
 			}
+
+			bool youdaoTranlate()
+			{
+				string url = "http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule";
+				map<string, string> formDataMap = {
+				 { "i", "fdfdd"},
+				 { "type" , "AUTO"},
+				 { "smartresult" , "dict"},
+				 { "client" , "fanyideskweb"},
+				 { "ue" , "UTF-8"},
+				 { "typoResult" , "true"},
+				 { "doctype" , "json"},
+				 { "version" , "2.1"},
+				 { "keyfrom:" , "fanyi.web"},
+				};
+				HttpClient httpClient;
+				Response response = httpClient.setProxy("127.0.0.1:8888").post(url, formDataMap, HtmlEnctype::application_x_www_urlencoded);				
+				return response.success();
+			}
+
 
 			bool googleTranslate()
 			{
