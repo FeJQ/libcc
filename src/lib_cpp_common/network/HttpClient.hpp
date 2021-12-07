@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <iostream>
 #include <map>
 #include <vector>
@@ -212,6 +212,7 @@ namespace libcc
 				// 设置WriteFunction传入的user data
 				code = curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &this->response);
 				assert(code == CURLE_OK);
+				// 指定响应头回调函数
 				code = curl_easy_setopt(this->curl, CURLOPT_HEADERFUNCTION, headerCallback);
 				assert(code == CURLE_OK);
 				// 设置HeaderFunction传入的user data
@@ -223,6 +224,8 @@ namespace libcc
 				// 设置error buffer
 				code = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, this->response.getErrorMessageRef()->data());
 				assert(code == CURLE_OK);
+				// 指定编码
+				setAcceptEncoding("gzip, deflate");
 			};
 
 			HttpClient(const HttpClient& httpClient) = delete;
@@ -249,7 +252,9 @@ namespace libcc
 			{
 				CURLcode code;
 				struct curl_slist* headerList = NULL;
-				for (auto i = 0; i < headerVector.size(); i++)
+
+				/* set http headers */
+				for (int i = 0; i < headerVector.size(); i++)
 				{
 					headerList = curl_slist_append(headerList, headerVector[i].c_str());
 				}
@@ -262,14 +267,13 @@ namespace libcc
 			{
 				CURLcode code;
 				struct curl_slist* headerList = NULL;
+				vector<string> headerVector;
 				for (auto i = headerMap.begin(); i != headerMap.end(); i++)
 				{
 					string header = i->first + ":" + i->second;
-					headerList = curl_slist_append(headerList, header.c_str());
+					headerVector.push_back(header);
 				}
-				code = curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, headerList);
-				assert(code == CURLE_OK);
-				return *this;
+				return setHeaders(headerVector);		
 			}
 
 			HttpClient& setSslVerify(bool value)

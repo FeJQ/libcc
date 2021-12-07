@@ -31,6 +31,7 @@ namespace libcc
 			virtual bool entry()
 			{
 				bool result = true;
+				result &= ifanyiTranslate();
 				result &= youdaoTranlate();
 				result &= googleTranslate();
 				return result;
@@ -51,7 +52,7 @@ namespace libcc
 				 { "keyfrom:" , "fanyi.web"},
 				};
 				HttpClient httpClient;
-				Response response = httpClient.setProxy("127.0.0.1:8888").post(url, formDataMap, HtmlEnctype::application_x_www_urlencoded);				
+				Response response = httpClient.setProxy("127.0.0.1:8888").post(url, formDataMap, HtmlEnctype::application_x_www_urlencoded);
 				return response.success();
 			}
 
@@ -60,7 +61,7 @@ namespace libcc
 			{
 				bool result = true;
 				system("chcp 65001");
-				string url = "http://translate.google.com/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=auto&tl=en&q=今天天气不错,阳光明媚";
+				string url = "http://translate.google.com/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=auto&tl=en&q=浠婂ぉ澶╂皵涓嶉敊,闃冲厜鏄庡獨";
 
 				HttpClient httpClient;
 				string s = httpClient.escape(url);
@@ -79,6 +80,42 @@ namespace libcc
 				}
 				cout << response.data() << endl;
 				return result;
+			}
+
+			bool ifanyiTranslate()
+			{
+				string result;
+				char* nation = (char*)"cn";
+				char* sl = (char*)"auto";
+				char* tl = (char*)"ja";
+				string query = R"(骞村悗)";
+				string proxy = "127.0.0.1:7890";
+
+
+				string  url = "http://ifanyi.iciba.com/index.php?c=trans&m=fy&client=6&auth_user=key_ciba&sign=f0d00165077fdb7d";
+				HttpClient httpClient;
+				string q = query;
+				q = httpClient.escape(q);
+
+				httpClient.setProxy(proxy);
+
+				map<string, string> headDataMap = {
+						{"User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36"},
+						{"Accept-Encoding","gzip, deflate"},
+				};
+				/*map<string, string> formDataMap = {
+				  { "from", sl},
+				  { "to" , tl},
+				  { "q" , q},
+				};*/
+				string raw = "from=" + string(sl) + "&to=" + tl + "&q=" + q;
+				Response response = httpClient.setHeaders(headDataMap).post(url, raw);
+				if (response.success())
+				{
+					result = response.data();
+					return true;
+				}
+				return false;
 			}
 		};
 	}
