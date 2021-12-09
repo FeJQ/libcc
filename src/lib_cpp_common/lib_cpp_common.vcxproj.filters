@@ -62,8 +62,12 @@
     <ClInclude Include="container\List.hpp">
       <Filter>element</Filter>
     </ClInclude>
-    <ClInclude Include="test\ElementTest.h" />
-    <ClInclude Include="test\CryptoTest.h" />
+    <ClInclude Include="test\CryptoTest.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\ElementTest.h">
+      <Filter>test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />

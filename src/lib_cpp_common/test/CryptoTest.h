@@ -1,10 +1,12 @@
 #pragma once
 #include "test/BaseTest.h"
+#include "crypto/Base64.hpp"
 
 namespace libcc
 {
 	namespace test
 	{
+		using libcc::crypto::Base64;
 		class CryptoTest :public BaseTest
 		{
 		public:
@@ -27,7 +29,12 @@ namespace libcc
 			}
 			bool base64Test()
 			{
-				return false;
+				bool result = true;
+				string text = "I really love strawbarry.";
+				string encodeText = Base64::encode(text);
+				string decodeText = Base64::decode(encodeText);
+				result = text == decodeText;
+				return result;
 			}
 			bool md5Test()
 			{
