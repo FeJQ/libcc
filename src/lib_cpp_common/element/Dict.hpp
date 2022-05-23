@@ -11,7 +11,6 @@ namespace libcc
 {
 	namespace element
 	{
-		using std::string;
 		class Dict
 		{
 		public:
@@ -20,23 +19,23 @@ namespace libcc
 			{
 				this->update(const_cast<Dict&>(dict));
 			}
-			Dict(pair<Elem, Elem>)
+			Dict(std::pair<Elem, Elem>)
 			{
 
 			}
 
 			Elem& operator[](const Elem& key)
 			{
-				string strKey;
+				std::string strKey;
 				Elem& e = const_cast<Elem&>(key);
-				string name = e.type().name();
-				if (e.isType<string>())
+				std::string name = e.type().name();
+				if (e.isType<std::string>())
 				{
-					strKey = e.cast<string>();
+					strKey = e.cast<std::string>();
 				}
 				else if (e.isType<int>())
 				{
-					strKey = to_string(e.cast<int>());
+					strKey = std::to_string(e.cast<int>());
 				}
 				else if (e.isType<char*>())
 				{
@@ -48,7 +47,7 @@ namespace libcc
 				}
 				else
 				{
-					throw exception(("unsupport type " + name).c_str());
+					throw std::exception(("unsupport type " + name).c_str());
 				}
 				if (!this->exist(strKey))
 				{
@@ -75,23 +74,23 @@ namespace libcc
 			}
 
 
-			map<string, Elem>::iterator begin()
+			std::map<std::string, Elem>::iterator begin()
 			{
 				return this->data.begin();
 			}
 
-			map<string, Elem>::iterator end()
+			std::map<std::string, Elem>::iterator end()
 			{
 				return this->data.end();
 			}
 
 
 
-			void foreach(void callback(string& key, Elem& value))
+			void foreach(void callback(std::string& key, Elem& value))
 			{
 				for (auto i = this->data.begin(); i != this->data.end(); i++)
 				{
-					callback((string&)i->first, (Elem&)i->second);
+					callback((std::string&)i->first, (Elem&)i->second);
 				}
 			}
 
@@ -107,9 +106,9 @@ namespace libcc
 
 			bool exist(int key)
 			{
-				return this->data.find(to_string(key)) != this->data.end();
+				return this->data.find(std::to_string(key)) != this->data.end();
 			}
-			bool exist(string key)
+			bool exist(std::string key)
 			{
 				return this->data.find(key) != this->data.end();
 			}
@@ -123,9 +122,9 @@ namespace libcc
 				}
 			}
 
-			vector<string> keys()
+			std::vector<std::string> keys()
 			{
-				vector<string> keys;
+				std::vector<std::string> keys;
 				for (auto i = this->data.begin(); i != this->data.end(); i++)
 				{
 					keys.push_back(i->first);
@@ -133,9 +132,9 @@ namespace libcc
 				return keys;
 			}
 
-			string toStringArray()
+			std::string toStringArray()
 			{
-				string array = "{";
+				std::string array = "{";
 				int count = 0;
 				for (auto i = this->begin(); i != this->end(); i++)
 				{
@@ -148,7 +147,7 @@ namespace libcc
 
 
 		private:
-			map<string, Elem> data;
+			std::map<std::string, Elem> data;
 		};
 	}
 }

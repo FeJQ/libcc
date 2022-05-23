@@ -12,7 +12,6 @@ namespace libcc
 {
 	namespace element
 	{
-		using std::string;
 		class List
 		{
 		public:
@@ -29,7 +28,7 @@ namespace libcc
 				}
 				this->data.push_back(list);
 			}
-			List(const string& str)
+			List(const std::string& str)
 			{
 				for (int i = 0; i < str.size(); i++)
 				{
@@ -91,7 +90,7 @@ namespace libcc
 			}
 
 
-			List operator+=(const string& str)
+			List operator+=(const std::string& str)
 			{
 				for (int i = 0; i < str.size(); i++)
 				{
@@ -135,14 +134,14 @@ namespace libcc
 				}
 			}
 
-			string toByteString()
+			std::string toByteString()
 			{
-				string str;
+				std::string str;
 				for (int i = 0; i < this->data.size(); i++)
 				{
 					str += this->data[i].toByte();
 				}
-				if (str.size() != this->data.size()) throw exception(("List to string failed," + to_string(this->data.size() - str.size()) + " byte(s) are missing").c_str());
+				if (str.size() != this->data.size()) throw std::exception(("List to string failed," + std::to_string(this->data.size() - str.size()) + " byte(s) are missing").c_str());
 				return str;
 			}
 			int size()
@@ -162,22 +161,22 @@ namespace libcc
 				}
 				return false;
 			}
-			static void fromJson(string jsonValue) {
+			static void fromJson(std::string jsonValue) {
 
 			}
-			string toIntArray()
+			std::string toIntArray()
 			{
-				string intArray;
+				std::string intArray;
 				for (auto i = 0; i < this->data.size() - 1; i++)
 				{
-					intArray += to_string((unsigned int)data[i].toByte()) + ", ";
+					intArray += std::to_string((unsigned int)data[i].toByte()) + ", ";
 				}
-				intArray += to_string((unsigned int)data[this->data.size() - 1].toByte());
+				intArray += std::to_string((unsigned int)data[this->data.size() - 1].toByte());
 				return intArray;
 			}
-			string toStringArray()
+			std::string toStringArray()
 			{
-				string array = "[";
+				std::string array = "[";
 				for (auto i = 0; i < this->data.size(); i++)
 				{
 					array += data[i].toString() + (i == (this->data.size() - 1) ? "" : ",");
@@ -186,8 +185,18 @@ namespace libcc
 				return array;
 			}
 
+			std::vector<Elem>::iterator begin()
+			{
+				return this->data.begin();
+			}
+
+			std::vector<Elem>::iterator end()
+			{
+				return this->data.end();
+			}
+
 		private:
-			vector<Elem>  data;
+			std::vector<Elem>  data;
 		};
 
 

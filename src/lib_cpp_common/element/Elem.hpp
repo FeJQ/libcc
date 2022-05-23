@@ -1,9 +1,16 @@
 #pragma once
+/* C++ 17 std::any */
+#include <any>
+using any = std::any;
+
+/* C++ 11 boost::any */
+//#include <boost/any.hpp>
+//using any = boost::any;
 
 
 #include<iostream>
 #include<string.h>
-#include <boost/any.hpp>
+
 #include <typeinfo>
 #include <vector>
 
@@ -11,9 +18,6 @@ namespace libcc
 {
 	namespace element
 	{
-
-		using namespace std;
-		using boost::any;
 
 		union ListElement
 		{
@@ -111,42 +115,42 @@ namespace libcc
 				ListElement e = this->convert();
 				return e.d;
 			}
-			string toString()
+			std::string toString()
 			{
-				if (this->isType<string>())
-					return  "\"" + this->cast<string>() + "\"";
+				if (this->isType<std::string>())
+					return  "\"" + this->cast<std::string>() + "\"";
 				else if (this->isType<const char*>())
-					return  "\"" + string(this->cast<const char*>()) + "\"";
+					return  "\"" + std::string(this->cast<const char*>()) + "\"";
 				else if (this->isType<char*>())
-					return "\"" + string(this->cast<char*>()) + "\"";
+					return "\"" + std::string(this->cast<char*>()) + "\"";
 				else if (this->isType<bool>())
 					return this->cast<bool>() ? "true" : "false";
 				else if (this->isType<char>() || this->isType<unsigned char>())
-					return to_string(this->toByte());
+					return std::to_string(this->toByte());
 				else if (this->isType<short>() || this->isType<unsigned short>())
-					return to_string(this->toInt16());
+					return std::to_string(this->toInt16());
 				else if (this->isType<int>() || this->isType<unsigned int>())
-					return to_string(this->toInt32());
+					return std::to_string(this->toInt32());
 				else if (this->isType<long>() || this->isType<unsigned long>())
-					return to_string(this->toInt32());
+					return std::to_string(this->toInt32());
 				else if (this->isType<long long>() || this->isType<unsigned long long>())
-					return to_string(this->toInt64());
+					return std::to_string(this->toInt64());
 				else if (this->isType<float>())
-					return to_string(this->toFloat());
+					return std::to_string(this->toFloat());
 				else if (this->isType<double>())
-					return to_string(this->toDouble());
+					return std::to_string(this->toDouble());
 				else
-					return string("undefined");
+					return std::string("undefined");
 			}
 
 			template<class  T>
 			T cast() {
-				if (this->data.type() != typeid(T)) throw exception(("data type:" + string(this->data.type().name()) + " is not " + string(typeid(T).name())).c_str());
-				T result = boost::any_cast<T>(this->data);
+				if (this->data.type() != typeid(T)) throw std::exception(("data type:" + std::string(this->data.type().name()) + " is not " + std::string(typeid(T).name())).c_str());
+				T result = std::any_cast<T>(this->data);
 				return result;
 
 			}
-			const boost::typeindex::type_info& type()
+			const type_info& type()
 			{
 				return this->data.type();
 			}
@@ -159,50 +163,50 @@ namespace libcc
 			}
 
 			bool empty() {
-				return this->data.empty();
+				return !this->data.has_value();
 			}
 		private:
 			ListElement convert()
 			{
 				ListElement e{ 0 };
 				if (this->data.type() == typeid(unsigned char))
-					e.byte = boost::any_cast<unsigned char>(this->data);
+					e.byte = std::any_cast<unsigned char>(this->data);
 
 				else if (this->data.type() == typeid(char))
-					e.byte = boost::any_cast<char>(this->data);
+					e.byte = std::any_cast<char>(this->data);
 
 				else if (this->data.type() == typeid(short))
-					e.word = boost::any_cast<short>(this->data);
+					e.word = std::any_cast<short>(this->data);
 
 				else if (this->data.type() == typeid(unsigned short))
-					e.word = boost::any_cast<unsigned short>(this->data);
+					e.word = std::any_cast<unsigned short>(this->data);
 
 				else if (this->data.type() == typeid(int))
-					e.dword = boost::any_cast<int>(this->data);
+					e.dword = std::any_cast<int>(this->data);
 
 				else if (this->data.type() == typeid(unsigned int))
-					e.dword = boost::any_cast<unsigned int>(this->data);
+					e.dword = std::any_cast<unsigned int>(this->data);
 
 				else if (this->data.type() == typeid(long))
-					e.dword = boost::any_cast<long>(this->data);
+					e.dword = std::any_cast<long>(this->data);
 
 				else if (this->data.type() == typeid(unsigned long))
-					e.dword = boost::any_cast<unsigned long>(this->data);
+					e.dword = std::any_cast<unsigned long>(this->data);
 
 				else if (this->data.type() == typeid(long long))
-					e.qword = boost::any_cast<long long>(this->data);
+					e.qword = std::any_cast<long long>(this->data);
 
 				else if (this->data.type() == typeid(unsigned long long))
-					e.qword = boost::any_cast<unsigned long long>(this->data);
+					e.qword = std::any_cast<unsigned long long>(this->data);
 
 				else if (this->data.type() == typeid(float))
-					e.f = boost::any_cast<float>(this->data);
+					e.f = std::any_cast<float>(this->data);
 
 				else if (this->data.type() == typeid(double))
-					e.d = boost::any_cast<double>(this->data);
+					e.d = std::any_cast<double>(this->data);
 				else
 				{
-					string name = this->data.type().name();
+					std::string name = this->data.type().name();
 					throw std::exception(("data type " + name + " is not supported").c_str());
 				}
 				return e;

@@ -17,6 +17,9 @@
     <Filter Include="element">
       <UniqueIdentifier>{a094ee0b-13d2-4c2c-9cfe-37af85a79c36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hook">
+      <UniqueIdentifier>{48be0a83-dd95-4814-b368-2def62b31346}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="network\HttpClient.hpp">
@@ -53,20 +56,23 @@
     <ClInclude Include="crypto\Md5.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="container\Dict.hpp">
-      <Filter>element</Filter>
-    </ClInclude>
-    <ClInclude Include="container\Elem.hpp">
-      <Filter>element</Filter>
-    </ClInclude>
-    <ClInclude Include="container\List.hpp">
-      <Filter>element</Filter>
-    </ClInclude>
     <ClInclude Include="test\CryptoTest.h">
       <Filter>test</Filter>
     </ClInclude>
     <ClInclude Include="test\ElementTest.h">
       <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Elem.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="element\List.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Dict.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="InlineHook.hpp">
+      <Filter>hook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

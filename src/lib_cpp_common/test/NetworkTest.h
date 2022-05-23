@@ -2,7 +2,7 @@
 #include "test/BaseTest.h"
 #include "network/HttpClient.hpp"
 #include <string>
-#include <curl/curl.h>
+#include "network/curl/curl.h"
 #include <map>
 
 namespace libcc

@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "curl/curl.h"
+#include "network/curl/curl.h"
 #include <assert.h>
 
 #ifdef __APPLE__
