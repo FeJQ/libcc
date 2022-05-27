@@ -1,17 +1,17 @@
 
-
-#include "test/NetworkTest.h"
+#include <string>
+//#include "test/NetworkTest.h"
 #include "test/ElementTest.h"
 //#include "test/CryptoTest.h"
-#include "InlineHook.hpp"
+#include "test/HookTest.h"
 
 using namespace libcc;
 using namespace libcc::test;
 
 int main(int argc, char** argv)
 {
-	InlineHook inlineHook;
-	inlineHook.hook(0,0,0,0);
+	HookTest hookTest;
+	hookTest.entry();
 
 	List list = {0,1,2,3};
 	for (const auto& i : list)
