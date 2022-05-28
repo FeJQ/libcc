@@ -101,7 +101,7 @@ public:
 
 		memcpy(this->tramplineStart, DETOUR_INST, sizeof(DETOUR_INST));
 		memset(this->tramplineReturn, 0x90, MAX_INSTUCTION_LEN + sizeof(DETOUR_INST));
-		memcpy(this->tramplineReturn + MAX_INSTUCTION_LEN + sizeof(DETOUR_INST), DETOUR_INST, sizeof(DETOUR_INST));	
+		memcpy(this->tramplineReturn + MAX_INSTUCTION_LEN + sizeof(DETOUR_INST), DETOUR_INST, sizeof(DETOUR_INST));
 	}
 
 
@@ -162,15 +162,74 @@ private:
 		{
 			/* 64bit */
 			*(DWORD*)(this->tramplineStart + 1) = (DWORD)address; // address.low
-			*(DWORD*)(this->tramplineStart + 9) = (ULONG64)(address)>>32; // address.high
+			*(DWORD*)(this->tramplineStart + 9) = (ULONG64)(address) >> 32; // address.high
 		}
 	}
 
+	/**
+	 * 保存被替换掉的指令
+	 * @param PVOID buffer: 被替换掉的指令的起始地址
+	 * @param int size:  需要替换的总长度
+	 */
 	void setReplacedInstruction(PVOID buffer, int size)
 	{
 		this->replacedInstSize = size;
 		assert(size <= MAX_INSTUCTION_LEN + sizeof(DETOUR_INST));
-		memoryCopy(this->tramplineReturn, buffer, size);
+
+		/* 指令位移技术 */
+		BYTE* lpTemp = (BYTE*)buffer;
+		unsigned int position = 0;
+		while (position < size)
+		{
+			unsigned char* pInstruction = (unsigned char*)buffer + position;
+			unsigned int instructionSize = sizeOfInstruction(pInstruction);
+
+			if (pInstruction[0] >= 0x70 && pInstruction[0] <= 0x7F)
+			{
+				// short jmp
+				WORD* pJmpCode = (WORD*)(lpTemp);
+				*pJmpCode = (pInstruction[0] * 0x100) + 0x100F;
+				// 0x70 ~ 0x7F   <=> 0x0f 0x71  ~ 0x0f 0x8F
+				//T = S1 + 2 + D1 
+				//T = S2 + 6 + D2
+				//D2 = S1 + 2 + D1 - S2 - 6
+				BYTE d1 = *(BYTE*)((ULONG)pInstruction + 1);
+				*(ULONG*)(lpTemp + 2) = (ULONG)pInstruction + 2 + (ULONG)d1 - (ULONG)lpTemp - 6;
+				lpTemp += 6;
+			}
+			else if (pInstruction[0] == 0x0F && (pInstruction[1] >= 0x80 && pInstruction[1] <= 0x8F))
+			{
+				// long jmp
+				*(WORD*)(lpTemp) = *(WORD*)pInstruction;
+				*(ULONG_PTR*)(lpTemp + 2) = *(ULONG_PTR*)((ULONG)pInstruction + 2) + (ULONG)pInstruction - (ULONG)lpTemp;
+				//T = S1 + 6 + D1 
+				//T = S2 + 6 + D2
+				//D2 = S1 + 6 + D1 - S2 - 6
+				//D2 = S1 + D1 - S2
+				ULONG d1 = *(ULONG*)(pInstruction + 2);
+				*(ULONG*)(lpTemp + 2) = (ULONG)pInstruction + d1 - (ULONG)lpTemp;
+				lpTemp += 6;
+			}
+			else if (pInstruction[0] == 0xE9 || pInstruction[0] == 0xE8)
+			{
+				//调整jmp,CALL
+				//T = S1 + 5 + D1 
+				//T = S2 + 5 + D2
+				//D2 = S1 + 5 + D1 - S2 - 5
+				//D2 = S1 + D1 - S2
+				*(lpTemp) = pInstruction[0];
+				ULONG d1 = *(ULONG*)(pInstruction + 1);
+				*(ULONG*)(lpTemp + 1) = (ULONG)pInstruction + d1 - (ULONG)lpTemp;
+				lpTemp += 5;
+			}
+			else
+			{
+				//其它指令直接复制
+				//memcpy((char*)(lpTemp), (char*)(orginHookAddr + pos), len);
+				memoryCopy(this->tramplineReturn + position, buffer, instructionSize);
+				lpTemp += instructionSize;
+			}
+		}
 	}
 
 	/**

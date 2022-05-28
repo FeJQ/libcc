@@ -236,6 +236,9 @@ namespace libcc
 				curl_easy_cleanup(this->curl);
 				curl_global_cleanup();
 			}
+			virtual Response get(string url) = 0;
+			virtual Response post(string url, string postData) = 0;
+			virtual Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data) = 0;
 
 
 			HttpClient& setHeaders(string headers)
@@ -273,7 +276,7 @@ namespace libcc
 					string header = i->first + ":" + i->second;
 					headerVector.push_back(header);
 				}
-				return setHeaders(headerVector);		
+				return setHeaders(headerVector);
 			}
 
 			HttpClient& setSslVerify(bool value)
@@ -287,128 +290,9 @@ namespace libcc
 			}
 
 
-			/**
-			  * 发送Get请求
-			  *
-			  * @param url 请求地址
-			  * @return Response
-			  */
-			Response get(string url)
-			{
-				CURLcode code = CURLE_OK;
-				status = HttpStatus::OK;
-				this->response.clear();
-				code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
-				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POST, 0);
-				assert(code == CURLE_OK);
-				code = curl_easy_perform(this->curl);
-				if (code != CURLE_OK)
-					return Response(code, curl_easy_strerror(code));
-				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
-				assert(code == CURLE_OK);
-				this->response.setCode(status);
-				return this->response;
-			}
 
 
-			/**
-			  * 发送Post请求
-			  *
-			  * @param url 请求地址
-			  * @param postData post数据
-			  * @return Response
-			  */
-			Response post(string url, string postData)
-			{
-				status = HttpStatus::OK;
-				this->response.clear();
-				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
-				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
-				assert(code == CURLE_OK);
-				curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, postData.size());
-				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, postData.data());
-				assert(code == CURLE_OK);
-				code = curl_easy_perform(this->curl);
-				if (code != CURLE_OK)
-					return Response(code, curl_easy_strerror(code));
-				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
-				assert(code == CURLE_OK);
-				this->response.setCode(status);
-				return this->response;
-			}
 
-
-			/**
-			  * 发送Post请求
-			  *
-			  * @param url 请求地址
-			  * @param formDataMap 表单数据，如{"key","value"}
-			  * @return Response
-			  */
-			Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data)
-			{
-				status = HttpStatus::OK;
-				this->response.clear();
-				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
-				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
-				assert(code == CURLE_OK);
-
-				struct curl_httppost* form = NULL;
-				struct curl_httppost* last = NULL;
-
-				string formData;
-
-				/* build form */
-
-				switch (enctype)
-				{
-				case libcc::network::HtmlEnctype::application_x_www_urlencoded:
-				{
-					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
-					{
-						formData += (i == formDataMap.begin() ? "" : "&") + escape(i->first) + "=" + escape(i->second);
-					}
-					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, formData.size());
-					assert(code == CURLE_OK);
-					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, formData.data());
-					assert(code == CURLE_OK);
-					break;
-				}
-				case libcc::network::HtmlEnctype::multipart_form_data:
-					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
-					{
-						curl_formadd(&form, &last, CURLFORM_COPYNAME, i->first.c_str(), CURLFORM_COPYCONTENTS, i->second.c_str(), CURLFORM_END);
-					}
-					code = curl_easy_setopt(this->curl, CURLOPT_HTTPPOST, form);
-					assert(code == CURLE_OK);
-					break;
-				case libcc::network::HtmlEnctype::text_plain:
-					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
-					{
-						formData += (i == formDataMap.begin() ? "" : "&") + i->first + "=" + i->second;
-					}
-					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, formData.size());
-					assert(code == CURLE_OK);
-					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, formData.data());
-					assert(code == CURLE_OK);
-					break;
-				default:
-					throw;
-				}
-
-				/* perform request */
-				code = curl_easy_perform(this->curl);
-				if (code != CURLE_OK)
-					return Response(code, curl_easy_strerror(code));
-				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
-				assert(code == CURLE_OK);
-				this->response.setCode(status);
-				return this->response;
-			}
 
 			/**
 			  * 开启并设置cookie的路径
@@ -528,8 +412,8 @@ namespace libcc
 			string unescape(string content)
 			{
 				int len;
-				char* e_content = curl_easy_unescape(curl, content.c_str(), content.length(),&len);
-				std::string result = string(e_content,len);
+				char* e_content = curl_easy_unescape(curl, content.c_str(), content.length(), &len);
+				std::string result = string(e_content, len);
 				curl_free(e_content);
 				return result;
 			}
@@ -585,11 +469,158 @@ namespace libcc
 				}
 				return total;
 			}
-		private:
+		protected:
 			Response response;
 			//string cookies;
 			CURL* curl;
 			HttpStatus status;
+		};
+
+		class HttpSyncClient :public HttpClient
+		{
+			/**
+			  * 发送Get请求
+			  *
+			  * @param url 请求地址
+			  * @return Response
+			  */
+			Response get(string url) override
+			{
+				CURLcode code = CURLE_OK;
+				status = HttpStatus::OK;
+				this->response.clear();
+				code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+				assert(code == CURLE_OK);
+				code = curl_easy_setopt(this->curl, CURLOPT_POST, 0);
+				assert(code == CURLE_OK);
+				code = curl_easy_perform(this->curl);
+				if (code != CURLE_OK)
+					return Response(code, curl_easy_strerror(code));
+				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
+				assert(code == CURLE_OK);
+				this->response.setCode(status);
+				return this->response;
+			}
+
+
+			/**
+			  * 发送Post请求
+			  *
+			  * @param url 请求地址
+			  * @param postData post数据
+			  * @return Response
+			  */
+			Response post(string url, string postData) override
+			{
+				status = HttpStatus::OK;
+				this->response.clear();
+				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+				assert(code == CURLE_OK);
+				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				assert(code == CURLE_OK);
+				curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, postData.size());
+				assert(code == CURLE_OK);
+				code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, postData.data());
+				assert(code == CURLE_OK);
+				code = curl_easy_perform(this->curl);
+				if (code != CURLE_OK)
+					return Response(code, curl_easy_strerror(code));
+				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
+				assert(code == CURLE_OK);
+				this->response.setCode(status);
+				return this->response;
+			}
+
+
+			/**
+			  * 发送Post请求
+			  *
+			  * @param url 请求地址
+			  * @param formDataMap 表单数据，如{"key","value"}
+			  * @return Response
+			  */
+			Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data) override
+			{
+				status = HttpStatus::OK;
+				this->response.clear();
+				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+				assert(code == CURLE_OK);
+				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				assert(code == CURLE_OK);
+
+				struct curl_httppost* form = NULL;
+				struct curl_httppost* last = NULL;
+
+				string formData;
+
+				/* build form */
+
+				switch (enctype)
+				{
+				case libcc::network::HtmlEnctype::application_x_www_urlencoded:
+				{
+					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+					{
+						formData += (i == formDataMap.begin() ? "" : "&") + escape(i->first) + "=" + escape(i->second);
+					}
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, formData.size());
+					assert(code == CURLE_OK);
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, formData.data());
+					assert(code == CURLE_OK);
+					break;
+				}
+				case libcc::network::HtmlEnctype::multipart_form_data:
+					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+					{
+						curl_formadd(&form, &last, CURLFORM_COPYNAME, i->first.c_str(), CURLFORM_COPYCONTENTS, i->second.c_str(), CURLFORM_END);
+					}
+					code = curl_easy_setopt(this->curl, CURLOPT_HTTPPOST, form);
+					assert(code == CURLE_OK);
+					break;
+				case libcc::network::HtmlEnctype::text_plain:
+					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
+					{
+						formData += (i == formDataMap.begin() ? "" : "&") + i->first + "=" + i->second;
+					}
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, formData.size());
+					assert(code == CURLE_OK);
+					code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, formData.data());
+					assert(code == CURLE_OK);
+					break;
+				default:
+					throw;
+				}
+
+				/* perform request */
+				code = curl_easy_perform(this->curl);
+				if (code != CURLE_OK)
+					return Response(code, curl_easy_strerror(code));
+				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
+				assert(code == CURLE_OK);
+				this->response.setCode(status);
+				return this->response;
+			}
+
+			class HttpAsyncClient :public HttpClient
+			{
+			public:
+				Response get(string url) override
+				{
+					return this->response;
+				}
+
+				Response post(string url, string postData) override
+				{
+					return this->response;
+				}
+
+				Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data) override
+				{
+					return this->response;
+				}
+			private:
+				bool stopFlag = false;
+			};
 		};
 	}
 }
