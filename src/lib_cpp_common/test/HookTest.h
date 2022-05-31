@@ -7,7 +7,7 @@
 
 InlineHook inlineHook;
 
-typedef int  (__stdcall *t_MessageBoxA)(
+typedef int(__stdcall *t_MessageBoxA)(
 	_In_opt_ HWND hWnd,
 	_In_opt_ LPCSTR lpText,
 	_In_opt_ LPCSTR lpCaption,
@@ -32,21 +32,13 @@ namespace libcc
 		class HookTest :public BaseTest
 		{
 		public:
-			
+
 
 			// Õ®π˝ BaseTest ºÃ≥–
 			virtual bool entry() override
 			{
-				if (sizeof(void*) == 4)
-				{
-					inlineHook.hook(MessageBoxA, 12, proxy_MessageBoxA);
-				}
-				else
-				{
-					inlineHook.hook(MessageBoxA, 14, proxy_MessageBoxA);
-				}
-
-				MessageBoxA(0,"’≈Œ¥œ£ «Àß∏Á",0,0);
+				inlineHook.hook(MessageBoxA, proxy_MessageBoxA);
+				MessageBoxA(0, "’≈Œ¥œ£ «Àß∏Á", 0, 0);
 				return true;
 			}
 		};
