@@ -20,6 +20,15 @@
     <Filter Include="hook">
       <UniqueIdentifier>{48be0a83-dd95-4814-b368-2def62b31346}</UniqueIdentifier>
     </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{4ba105f1-ce94-4bf5-b298-6b3a2106b599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{d019244d-5fc0-485d-87a5-7e9692d55ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inject">
+      <UniqueIdentifier>{1fdad5f0-ed8c-41ce-86e7-73418fa8a579}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="network\HttpClient.hpp">
@@ -31,7 +40,6 @@
     <ClInclude Include="test\NetworkTest.h">
       <Filter>test</Filter>
     </ClInclude>
-    <ClInclude Include="StringConverter.h" />
     <ClInclude Include="crypto\Padding.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
@@ -71,7 +79,16 @@
     <ClInclude Include="element\Dict.hpp">
       <Filter>element</Filter>
     </ClInclude>
-    <ClInclude Include="InlineHook.hpp">
+    <ClInclude Include="utils\StringConverter.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Process.hpp">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="inject\RemoteThreadInjector.hpp">
+      <Filter>inject</Filter>
+    </ClInclude>
+    <ClInclude Include="hook\InlineHook.hpp">
       <Filter>hook</Filter>
     </ClInclude>
   </ItemGroup>

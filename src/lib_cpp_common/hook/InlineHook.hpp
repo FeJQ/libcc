@@ -1607,9 +1607,14 @@ public:
 		return true;
 	}
 
-	NTSTATUS unhook(void*trampline)
+	bool unhook(void*trampline)
 	{
 		return 0;
+	}
+
+	void* originalFunction()
+	{
+		return tramplineReturn;
 	}
 
 private:
@@ -1727,6 +1732,7 @@ private:
 		}
 	}
 
+	
 private:
 	// 原始函数中被替换的指令的长度
 	int replacedInstSize;
@@ -1734,7 +1740,6 @@ private:
 	// 由原始函数跳转到tramplineStart，再跳转到代理函数
 	unsigned char tramplineStart[sizeof(DETOUR_INST)];
 
-public:
 	// 从代理函数跳转回replacedCode
 	// 前MAX_INSTUCTION_LEN+sizeof(DETOUR_INST)字节存放被替换的指令
 	// 后sizeof(DETOUR_INST)字节存放跳转到原函数的指令
