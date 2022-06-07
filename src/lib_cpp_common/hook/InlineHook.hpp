@@ -1612,9 +1612,9 @@ public:
 		return 0;
 	}
 
-	void* originalFunction()
+	FARPROC originalFunction()
 	{
-		return tramplineReturn;
+		return reinterpret_cast<FARPROC>((void*)tramplineReturn);
 	}
 
 private:
@@ -1706,7 +1706,7 @@ private:
 			{
 				//其它指令直接复制
 				//memcpy((char*)(lpTemp), (char*)(orginHookAddr + pos), len);
-				memoryCopy(this->tramplineReturn + position, buffer, instructionSize);
+				memoryCopy(this->tramplineReturn + position, (char*)buffer+ position, instructionSize);
 				lpTemp += instructionSize;
 			}
 			position += instructionSize;

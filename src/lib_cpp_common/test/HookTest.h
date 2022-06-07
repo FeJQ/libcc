@@ -19,8 +19,8 @@ int __stdcall proxy_MessageBoxA(
 	_In_opt_ LPCSTR lpCaption,
 	_In_ UINT uType)
 {
-	lpText = "张未希是";
-	return ((t_MessageBoxA)((void*)inlineHook.tramplineReturn))(hWnd, lpText, lpCaption, uType);
+	lpText = "张未希是傻子";
+	return (reinterpret_cast<t_MessageBoxA>((inlineHook.originalFunction())))(hWnd, lpText, lpCaption, uType);
 }
 
 
