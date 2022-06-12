@@ -15,17 +15,14 @@ using namespace libcc::test;
 
 int main(int argc, char** argv)
 {
-	char** a = NULL;
-	std::thread t(main, 0, a);
-	t.detach();
-	MessageBoxA(NULL,"开始注入",NULL,0);
+	/*MessageBoxA(NULL,"开始注入",NULL,0);
 	RemoteThreadInjector injector("iTunes.exe",LR"(C:\aid\aiddll.dll)");
 	int result = injector.install();
 	if (result != 0)
 	{
 		MessageBoxA(NULL, "注入失败", NULL, 0);
 	}
-	return 0 ;
+	return 0 ;*/
 	HookTest hookTest;
 	hookTest.entry();
 
