@@ -12,7 +12,23 @@ namespace hook
 	
 #include <ntddk.h>
 
-	EXTERN_C NTSTATUS ZwProtectVirtualMemory(IN HANDLE ProcessHandle, IN PVOID* BaseAddress, IN SIZE_T* NumberOfBytesToProtect, IN ULONG NewAccessProtection, OUT PULONG OldAccessProtection);
+	
+
+	 using t_ZwProtectVirtualMemory = NTSTATUS (*)(IN HANDLE ProcessHandle, IN PVOID* BaseAddress, IN SIZE_T* NumberOfBytesToProtect, IN ULONG NewAccessProtection, OUT PULONG OldAccessProtection);
+
+	 NTSTATUS ZwProtectVirtualMemory(IN HANDLE ProcessHandle, IN PVOID* BaseAddress, IN SIZE_T* NumberOfBytesToProtect, IN ULONG NewAccessProtection, OUT PULONG OldAccessProtection)
+	 {
+		 static t_ZwProtectVirtualMemory ZwProtectVirtualMemory = nullptr;
+		 ZwProtectVirtualMemory = reinterpret_cast<t_ZwProtectVirtualMemory>((void*)MmGetProcedureAddress("ZwProtectVirtualMemory"));
+		 if (ZwProtectVirtualMemory != nullptr)
+		 {
+			 return ZwProtectVirtualMemory(ProcessHandle, BaseAddress, NumberOfBytesToProtect, NewAccessProtection, OldAccessProtection);
+		 }
+		 return STATUS_NOT_FOUND;
+	 }
+
+	 
+
 #define allocMemory(size) ExAllocatePoolWithTag(NonPagedPool,(size),'ilhk')
 #else
 #include <Windows.h>
@@ -1393,6 +1409,7 @@ namespace hook
 				ULONG_PTR* ldePtr = (ULONG_PTR*)s_getLdePtr();
 				if (*ldePtr == NULL)
 				{
+					DbgBreakPoint();
 					*ldePtr = (ULONG_PTR)allocMemory(12800);
 					if (*ldePtr == NULL)
 						return;
@@ -1557,20 +1574,21 @@ namespace hook
 	//__declspec(thread) CONTEXT tls_context = { 0 };
 
 	//关闭内存写保护
-	ULONG disableMemProtect(LPVOID lpAddr, ULONG uSize)
+	ULONG disableMemProtect(LPVOID lpAddr, size_t uSize)
 	{
 		ULONG uOld = 0;
 #ifdef KERNEL
 
-		uOld = KeRaiseIrqlToDpcLevel();
+		//uOld = KeRaiseIrqlToDpcLevel();
 		ULONG_PTR cr0 = __readcr0();
 #ifdef _X86_
 		cr0 &= 0xfffeffff;
 #else
 		cr0 &= 0xfffffffffffeffff;
 #endif
-		_disable();
+		//_disable();
 		__writecr0(cr0);
+		ZwProtectVirtualMemory(NtCurrentProcess(), &lpAddr, &uSize, PAGE_EXECUTE_READWRITE, &uOld);
 #else
 		VirtualProtect(lpAddr, uSize, PAGE_EXECUTE_READWRITE, &uOld);
 #endif 
@@ -1584,8 +1602,8 @@ namespace hook
 		//ULONG_PTR cr0 = __readcr0();
 		//cr0 |= 0x10000;
 		//__writecr0(cr0);
-		_enable();
-		KeLowerIrql(uOldValue);
+		//_enable();
+		//KeLowerIrql(uOldValue);
 
 #else
 		VirtualProtect(lpAddr, uSize, uOldValue, &uOldValue);
@@ -1652,9 +1670,9 @@ namespace hook
 			return 0;
 		}
 
-		void* originalFunction()
+		FARPROC originalFunction()
 		{
-			return tramplineReturn;
+			return (FARPROC)(void*)tramplineReturn;
 		}
 
 	private:
