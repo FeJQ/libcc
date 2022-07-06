@@ -1,19 +1,19 @@
 #pragma once
 #include <Windows.h>
-#include "system/Process.hpp"
-class RemoteThreadInjector
+#include "system/ProcessImpl.hpp"
+class RemoteThreadInjectorImpl
 {
 public:
-	RemoteThreadInjector(const char* processName, const wchar_t* dllFullName) {
+	RemoteThreadInjectorImpl(const char* processName, const wchar_t* dllFullName) {
 		strcpy(m_processName, processName);
 		lstrcpyW(m_dllFullName, dllFullName);
 	}
 
 	int install()
 	{
-		Process::enableDebugPrivilege(GetCurrentProcess());
+		ProcessImpl::enableDebugPrivilege(GetCurrentProcess());
 		// 获取目标进程id
-		DWORD pid = Process::getProcessIdByName(m_processName);
+		DWORD pid = ProcessImpl::getProcessIdByName(m_processName);
 
 		// 获取目标进程句柄
 		m_hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);

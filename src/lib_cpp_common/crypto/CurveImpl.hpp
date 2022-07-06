@@ -15,7 +15,7 @@ namespace libcc
 	namespace crypto
 	{
 		using std::string;
-		class Curve
+		class CurveImpl
 		{
 		public:
 

@@ -4,30 +4,31 @@
 #include<iostream>
 #include<string.h>
 #include <map>
-#include "Elem.hpp"
+#include "ElemImpl.hpp"
+#include <string>
 
 
 namespace libcc
 {
 	namespace element
 	{
-		class Dict
+		class DictImpl
 		{
 		public:
-			Dict() = default;
-			Dict(const Dict& dict)
+			DictImpl() = default;
+			DictImpl(const DictImpl& dict)
 			{
-				this->update(const_cast<Dict&>(dict));
+				this->update(const_cast<DictImpl&>(dict));
 			}
-			Dict(std::pair<Elem, Elem>)
+			DictImpl(std::pair<ElemImpl, ElemImpl>)
 			{
 
 			}
 
-			Elem& operator[](const Elem& key)
+			ElemImpl& operator[](const ElemImpl& key)
 			{
 				std::string strKey;
-				Elem& e = const_cast<Elem&>(key);
+				ElemImpl& e = const_cast<ElemImpl&>(key);
 				std::string name = e.type().name();
 				if (e.isType<std::string>())
 				{
@@ -51,46 +52,46 @@ namespace libcc
 				}
 				if (!this->exist(strKey))
 				{
-					this->data[strKey] = Elem();
+					this->data[strKey] = ElemImpl();
 				}
 				return this->data[strKey];
 			}
 
-			Dict& operator+(Dict& dict)
+			DictImpl& operator+(DictImpl& dict)
 			{
 				this->update(dict);
 				return *this;
 			}
 
-			void operator=(const Dict& dict)
+			void operator=(const DictImpl& dict)
 			{
 				this->data.clear();
 				this->update(dict);
 			}
 
-			void operator+=(Dict dict)
+			void operator+=(DictImpl dict)
 			{
 				this->update(dict);
 			}
 
 
-			std::map<std::string, Elem>::iterator begin()
+			std::map<std::string, ElemImpl>::iterator begin()
 			{
 				return this->data.begin();
 			}
 
-			std::map<std::string, Elem>::iterator end()
+			std::map<std::string, ElemImpl>::iterator end()
 			{
 				return this->data.end();
 			}
 
 
 
-			void foreach(void callback(std::string& key, Elem& value))
+			void foreach(void callback(std::string& key, ElemImpl& value))
 			{
 				for (auto i = this->data.begin(); i != this->data.end(); i++)
 				{
-					callback((std::string&)i->first, (Elem&)i->second);
+					callback((std::string&)i->first, (ElemImpl&)i->second);
 				}
 			}
 
@@ -113,7 +114,7 @@ namespace libcc
 				return this->data.find(key) != this->data.end();
 			}
 
-			void update(const Dict& dict)
+			void update(const DictImpl& dict)
 			{
 				int a = 0;
 				for (auto i = dict.data.begin(); i != dict.data.end(); i++)
@@ -147,7 +148,7 @@ namespace libcc
 
 
 		private:
-			std::map<std::string, Elem> data;
+			std::map<std::string, ElemImpl> data;
 		};
 	}
 }

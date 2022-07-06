@@ -8,13 +8,13 @@ namespace libcc
 	namespace crypto
 	{
 		using std::string;
-		class Rsa
+		class RsaImpl
 		{
 		public:
 			enum PaddingMode
 			{
 				PKCS1 = RSA_PKCS1_PADDING,
-				SSLV23 = RSA_SSLV23_PADDING,
+				//SSLV23 = RSA_SSLV23_PADDING,
 				NoPadding = RSA_NO_PADDING,
 				PKCS1_OAEP = RSA_PKCS1_OAEP_PADDING,
 				X931 = RSA_X931_PADDING,

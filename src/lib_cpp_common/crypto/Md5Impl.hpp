@@ -87,10 +87,10 @@ namespace libcc
  (a) += (b); \
   }
 
-		class Md5
+		class Md5Impl
 		{
 		public:
-			Md5()
+			Md5Impl()
 			{
 				context.count[0] = context.count[1] = 0;
 				/* Load magic initialization constants.*/
@@ -101,7 +101,7 @@ namespace libcc
 			}
 			static string hash(string input)
 			{
-				Md5 md5;
+				Md5Impl md5;
 				md5.update(input);
 				string result;
 				string hash = md5.final();

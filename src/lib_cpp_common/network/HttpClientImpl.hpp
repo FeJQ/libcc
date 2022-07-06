@@ -197,10 +197,10 @@ namespace libcc
 			int curlCode;
 		};
 
-		class  HttpClient
+		class  HttpClientImpl
 		{
 		public:
-			HttpClient() {
+			HttpClientImpl() {
 				CURLcode code;
 
 				code = curl_global_init(CURL_GLOBAL_ALL);
@@ -228,10 +228,10 @@ namespace libcc
 				setAcceptEncoding("gzip, deflate");
 			};
 
-			HttpClient(const HttpClient& httpClient) = delete;
+			HttpClientImpl(const HttpClientImpl& httpClient) = delete;
 
 
-			~HttpClient()
+			~HttpClientImpl()
 			{
 				curl_easy_cleanup(this->curl);
 				curl_global_cleanup();
@@ -241,7 +241,7 @@ namespace libcc
 			virtual Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data) = 0;
 
 
-			HttpClient& setHeaders(string headers)
+			HttpClientImpl& setHeaders(string headers)
 			{
 				CURLcode code;
 				struct curl_slist* headerList = NULL;
@@ -251,7 +251,7 @@ namespace libcc
 				return *this;
 			}
 
-			HttpClient& setHeaders(vector<string> headerVector)
+			HttpClientImpl& setHeaders(vector<string> headerVector)
 			{
 				CURLcode code;
 				struct curl_slist* headerList = NULL;
@@ -266,7 +266,7 @@ namespace libcc
 				return *this;
 			}
 
-			HttpClient& setHeaders(map<string, string> headerMap)
+			HttpClientImpl& setHeaders(map<string, string> headerMap)
 			{
 				CURLcode code;
 				struct curl_slist* headerList = NULL;
@@ -279,7 +279,7 @@ namespace libcc
 				return setHeaders(headerVector);
 			}
 
-			HttpClient& setSslVerify(bool value)
+			HttpClientImpl& setSslVerify(bool value)
 			{
 				CURLcode code;
 				code = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, value);
@@ -299,7 +299,7 @@ namespace libcc
 			  * @param path cookie的存放和读取路径
 			  * @return HttpClient 返回本类实例
 			  */
-			HttpClient& setCookiePath(CCString fileName)
+			HttpClientImpl& setCookiePath(CCString fileName)
 			{
 				CURLcode code;
 				int size = fileName.size();
@@ -329,7 +329,7 @@ namespace libcc
 			  * @param address 代理的地址和端口,如"127.0.0.1:8888"
 			  * @return HttpClient 返回本类实例
 			  */
-			HttpClient& setProxy(string address)
+			HttpClientImpl& setProxy(string address)
 			{
 				CURLcode code;
 				code = curl_easy_setopt(curl, CURLOPT_PROXY, address.c_str());
@@ -343,7 +343,7 @@ namespace libcc
 			  * @param userAgent 令牌,如"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 			  * @return HttpClient 返回本类实例
 			  */
-			HttpClient& setUserAgent(string userAgent)
+			HttpClientImpl& setUserAgent(string userAgent)
 			{
 				CURLcode code;
 				code = curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent.c_str());
@@ -358,7 +358,7 @@ namespace libcc
 			  * @param requestTimeout 请求超时时间(秒)
 			  * @return HttpClient 返回本类实例
 			  */
-			HttpClient& setTimeout(unsigned int connectTimeout, unsigned int requestTimeout = -1)
+			HttpClientImpl& setTimeout(unsigned int connectTimeout, unsigned int requestTimeout = -1)
 			{
 				CURLcode code;
 				if (requestTimeout == -1)
@@ -373,7 +373,7 @@ namespace libcc
 			}
 
 
-			HttpClient& setKeepAlive(bool value, long intervalTime = 60, long idleTime = 120)
+			HttpClientImpl& setKeepAlive(bool value, long intervalTime = 60, long idleTime = 120)
 			{
 				CURLcode code;
 				code = curl_easy_setopt(this->curl, CURLOPT_TCP_KEEPALIVE, value);
@@ -389,7 +389,7 @@ namespace libcc
 				return *this;
 			}
 
-			HttpClient& setAcceptEncoding(string value)
+			HttpClientImpl& setAcceptEncoding(string value)
 			{
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_ACCEPT_ENCODING, value.c_str());
 				assert(code == CURLE_OK);
@@ -476,7 +476,7 @@ namespace libcc
 			HttpStatus status;
 		};
 
-		class HttpSyncClient :public HttpClient
+		class HttpSyncClient :public HttpClientImpl
 		{
 			/**
 			  * 发送Get请求
@@ -601,7 +601,7 @@ namespace libcc
 				return this->response;
 			}
 
-			class HttpAsyncClient :public HttpClient
+			class HttpAsyncClient :public HttpClientImpl
 			{
 			public:
 				Response get(string url) override

@@ -1,6 +1,8 @@
 #pragma once
 #include <Windows.h>
 #include <TlHelp32.h>
+#include <Process.h>
+#include <exception>
 
 class  EnumProcessCallback
 {
@@ -37,9 +39,11 @@ private:
 };
 
 
-class Process
+class ProcessImpl
 {
 public:
+
+
 	static int enumerateProcesses(EnumProcessCallback* enumProcessCallback)
 	{
 		PROCESSENTRY32 pe32;
@@ -72,6 +76,17 @@ public:
 		EnumerateFindSpecifiedProcess enumerateFindSpecifiedProcess(processName, &pe32);
 		enumerateProcesses(&enumerateFindSpecifiedProcess);
 		return pe32.th32ProcessID;
+	}
+
+	static ProcessInfo getProcessByName(const char* processName)
+	{
+		DWORD ret = 0;
+		PROCESSENTRY32 pe32;
+		EnumerateFindSpecifiedProcess enumerateFindSpecifiedProcess(processName, &pe32);
+		ret = enumerateProcesses(&enumerateFindSpecifiedProcess);
+		if (ret)
+			throw std::exception();
+
 	}
 
 	static int enableDebugPrivilege(HANDLE hProcess ,const char* privilegeName= SE_DEBUG_NAME)

@@ -4,7 +4,8 @@
 #include<iostream>
 #include<string.h>
 #include <vector>
-#include "Elem.hpp"
+#include "ElemImpl.hpp"
+#include <string>
 
 
 
@@ -12,11 +13,11 @@ namespace libcc
 {
 	namespace element
 	{
-		class List
+		class ListImpl
 		{
 		public:
-			List() = default;
-			List(const List& list, bool isRestruct = true)
+			ListImpl() = default;
+			ListImpl(const ListImpl& list, bool isRestruct = true)
 			{
 				if (isRestruct)
 				{
@@ -28,7 +29,7 @@ namespace libcc
 				}
 				this->data.push_back(list);
 			}
-			List(const std::string& str)
+			ListImpl(const std::string& str)
 			{
 				for (int i = 0; i < str.size(); i++)
 				{
@@ -40,7 +41,7 @@ namespace libcc
 
 			/* 其实现必须在头文件,否则会找不到符号 */
 			template<typename... Arg>
-			List(Arg... args)
+			ListImpl(Arg... args)
 			{
 				append(args...);
 			}
@@ -60,14 +61,14 @@ namespace libcc
 			}
 
 
-			List operator+(const int i)
+			ListImpl operator+(const int i)
 			{
 				this->data.push_back(i);
 				return this;
 			}
-			List operator+(const List& list)
+			ListImpl operator+(const ListImpl& list)
 			{
-				List tempList;
+				ListImpl tempList;
 				for (int i = 0; i < this->data.size(); i++)
 				{
 					tempList.data.push_back(this->data[i]);
@@ -79,7 +80,7 @@ namespace libcc
 				return tempList;
 			}
 
-			List operator=(const List& list)
+			ListImpl operator=(const ListImpl& list)
 			{
 				this->data.clear();
 				for (int i = 0; i < list.data.size(); i++)
@@ -90,7 +91,7 @@ namespace libcc
 			}
 
 
-			List operator+=(const std::string& str)
+			ListImpl operator+=(const std::string& str)
 			{
 				for (int i = 0; i < str.size(); i++)
 				{
@@ -98,7 +99,7 @@ namespace libcc
 				}
 				return this;
 			}
-			List operator+=(const List& list)
+			ListImpl operator+=(const ListImpl& list)
 			{
 				for (int i = 0; i < list.data.size(); i++)
 				{
@@ -106,27 +107,27 @@ namespace libcc
 				}
 				return this;
 			}
-			List operator+=(unsigned char c)
+			ListImpl operator+=(unsigned char c)
 			{
 				this->data.push_back(c);
 				return this;
 			}
 
-			Elem& operator[](int index)
+			ElemImpl& operator[](int index)
 			{
 				return data[index];
 			}
 
-			void set(int index, Elem a)
+			void set(int index, ElemImpl a)
 			{
 				this->data[index] = a;
 			}
-			Elem get(int index)
+			ElemImpl get(int index)
 			{
 				return this->data[index];
 			}
 
-			void foreach(void(*callback)(Elem&))
+			void foreach(void(*callback)(ElemImpl&))
 			{
 				for (int i = 0; i < this->data.size(); i++)
 				{
@@ -185,18 +186,18 @@ namespace libcc
 				return array;
 			}
 
-			std::vector<Elem>::iterator begin()
+			std::vector<ElemImpl>::iterator begin()
 			{
 				return this->data.begin();
 			}
 
-			std::vector<Elem>::iterator end()
+			std::vector<ElemImpl>::iterator end()
 			{
 				return this->data.end();
 			}
 
 		private:
-			std::vector<Elem>  data;
+			std::vector<ElemImpl>  data;
 		};
 
 

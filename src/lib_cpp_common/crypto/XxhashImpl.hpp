@@ -9,7 +9,7 @@ namespace libcc
 	namespace crypto
 	{
 		using std::string;
-		class Xxhash
+		class XxhashImpl
 		{
 		public:
 			static string hash32(string input)
@@ -72,7 +72,7 @@ namespace libcc
 		};
 
 
-		class Xxhash32 :public Xxhash
+		class Xxhash32 :public XxhashImpl
 		{
 		public:
 
@@ -107,7 +107,7 @@ namespace libcc
 			XXH32_state_t* state;
 		};
 
-		class Xxhash64 :public Xxhash
+		class Xxhash64 :public XxhashImpl
 		{
 		public:
 			Xxhash64(string input = "", XXH32_hash_t seed = 0)
