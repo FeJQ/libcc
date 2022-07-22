@@ -5,7 +5,7 @@ namespace libcc
 {
 	namespace crypto
 	{
-		class Base64Impl
+		class Base64
 		{
 		public:
 			static string encode(string inputText)

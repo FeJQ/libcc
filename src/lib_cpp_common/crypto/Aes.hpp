@@ -1,12 +1,12 @@
 #pragma once
-#include "openssl/aes.h"
-#include "PaddingImpl.hpp"
+#include <openssl/aes.h>
+#include "Padding.hpp"
 #include <assert.h>
 namespace libcc
 {
 	namespace crypto
 	{
-		class AesImpl
+		class Aes
 		{
 		public:
 			enum class EncryptStandard
@@ -27,7 +27,7 @@ namespace libcc
 			static const int BLOCK_SIZE = AES_BLOCK_SIZE;
 
 		public:
-			AesImpl(string key, EncryptMode encryptMode = EncryptMode::ECB, string iv = "", PaddingMode paddingMode = PaddingMode::PKCS7)
+			Aes(string key, EncryptMode encryptMode = EncryptMode::ECB, string iv = "", PaddingMode paddingMode = PaddingMode::PKCS7)
 			{
 				assert(key.size() == 16 || key.size() == 24 || key.size() == 32);
 				this->key = key;
@@ -38,12 +38,12 @@ namespace libcc
 
 			string encrypt(string inputText)
 			{
-				this->bufferLength = ((PaddingImpl::length(inputText.size(), AES_BLOCK_SIZE) + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;  //对齐分组
+				this->bufferLength = ((Padding::length(inputText.size(), AES_BLOCK_SIZE) + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;  //对齐分组
 
 				AES_KEY aesKey;
 				memset(&aesKey, 0, sizeof(aesKey));
 				AES_set_encrypt_key((unsigned char*)this->key.data(), key.size() * 8, &aesKey);
-				string paddedText = PaddingImpl::pad(inputText, AES_BLOCK_SIZE, this->paddingMode);
+				string paddedText = Padding::pad(inputText, AES_BLOCK_SIZE, this->paddingMode);
 
 				string cipherText;
 				cipherText.resize(this->bufferLength);
@@ -103,7 +103,7 @@ namespace libcc
 				}
 				if (this->paddingMode != PaddingMode::NoPadding)
 				{
-					return PaddingImpl::unpad(clearText);
+					return Padding::unpad(clearText);
 				}
 				return clearText;
 			}

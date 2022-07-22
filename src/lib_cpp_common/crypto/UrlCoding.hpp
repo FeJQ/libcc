@@ -9,10 +9,10 @@ namespace libcc
 	{
 		using std::string;
 
-		class UrlCodingImpl
+		class UrlCoding
 		{
 		public:
-			UrlCodingImpl() = delete;
+			UrlCoding() = delete;
 			static string encode(string str)
 			{
 				string strTemp = "";

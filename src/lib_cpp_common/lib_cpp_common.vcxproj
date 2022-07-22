@@ -19,22 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="crypto\AesImpl.hpp" />
-    <ClInclude Include="crypto\Base64Impl.hpp" />
-    <ClInclude Include="crypto\CurveImpl.hpp" />
-    <ClInclude Include="crypto\Md5Impl.hpp" />
-    <ClInclude Include="crypto\PaddingImpl.hpp" />
-    <ClInclude Include="crypto\RsaImpl.hpp" />
-    <ClInclude Include="crypto\UrlCodingImpl.hpp" />
-    <ClInclude Include="crypto\XxhashImpl.hpp" />
-    <ClInclude Include="element\DictImpl.hpp" />
-    <ClInclude Include="element\ElemImpl.hpp" />
-    <ClInclude Include="element\ListImpl.hpp" />
-    <ClInclude Include="hook\InlineHookImpl.hpp" />
-    <ClInclude Include="inject\RemoteThreadInjectorImpl.hpp" />
-    <ClInclude Include="network\HttpClientImpl.hpp" />
+    <ClInclude Include="crypto\Aes.hpp" />
+    <ClInclude Include="crypto\Base64.hpp" />
+    <ClInclude Include="crypto\Curve.hpp" />
+    <ClInclude Include="crypto\Md5.hpp" />
+    <ClInclude Include="crypto\Padding.hpp" />
+    <ClInclude Include="crypto\Rsa.hpp" />
+    <ClInclude Include="crypto\UrlCoding.hpp" />
+    <ClInclude Include="crypto\Xxhash.hpp" />
+    <ClInclude Include="element\Dict.hpp" />
+    <ClInclude Include="element\Elem.hpp" />
+    <ClInclude Include="element\List.hpp" />
+    <ClInclude Include="hook\InlineHook.hpp" />
+    <ClInclude Include="inject\RemoteThreadInjector.hpp" />
+    <ClInclude Include="network\HttpClient.hpp" />
     <ClInclude Include="Process.h" />
-    <ClInclude Include="system\ProcessImpl.hpp" />
+    <ClInclude Include="system\Process.hpp" />
     <ClInclude Include="test\BaseTest.h" />
     <ClInclude Include="test\CryptoTest.h" />
     <ClInclude Include="test\ElementTest.h" />

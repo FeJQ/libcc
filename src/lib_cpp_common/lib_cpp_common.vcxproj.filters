@@ -49,53 +49,53 @@
     <ClInclude Include="utils\StringConverter.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="crypto\AesImpl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\Base64Impl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\CurveImpl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\Md5Impl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\PaddingImpl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\RsaImpl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\UrlCodingImpl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="crypto\XxhashImpl.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
-    <ClInclude Include="element\DictImpl.hpp">
-      <Filter>element</Filter>
-    </ClInclude>
-    <ClInclude Include="element\ElemImpl.hpp">
-      <Filter>element</Filter>
-    </ClInclude>
-    <ClInclude Include="element\ListImpl.hpp">
-      <Filter>element</Filter>
-    </ClInclude>
-    <ClInclude Include="hook\InlineHookImpl.hpp">
-      <Filter>hook</Filter>
-    </ClInclude>
-    <ClInclude Include="inject\RemoteThreadInjectorImpl.hpp">
-      <Filter>inject</Filter>
-    </ClInclude>
-    <ClInclude Include="network\HttpClientImpl.hpp">
-      <Filter>network</Filter>
-    </ClInclude>
-    <ClInclude Include="system\ProcessImpl.hpp">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="Process.h">
       <Filter>interface</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Aes.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Base64.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Curve.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Md5.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Padding.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Rsa.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\UrlCoding.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto\Xxhash.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Dict.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="element\Elem.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="element\List.hpp">
+      <Filter>element</Filter>
+    </ClInclude>
+    <ClInclude Include="hook\InlineHook.hpp">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="inject\RemoteThreadInjector.hpp">
+      <Filter>inject</Filter>
+    </ClInclude>
+    <ClInclude Include="network\HttpClient.hpp">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Process.hpp">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

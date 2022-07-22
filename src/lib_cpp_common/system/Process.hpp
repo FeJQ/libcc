@@ -39,7 +39,7 @@ private:
 };
 
 
-class ProcessImpl
+class Process
 {
 public:
 

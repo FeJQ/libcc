@@ -29,17 +29,17 @@ namespace libcc
 			double d;
 		};
 
-		class ElemImpl
+		class Elem
 		{
 		public:
-			ElemImpl() = default;
+			Elem() = default;
 			template<typename ValueType>
-			ElemImpl(const ValueType& value)
+			Elem(const ValueType& value)
 			{
 				this->data = value;
 			}
 
-			ElemImpl(const ElemImpl& other)
+			Elem(const Elem& other)
 			{
 				this->data = other.data;
 			}
@@ -73,7 +73,7 @@ namespace libcc
 				return toInt32() == value;
 			}
 
-			ElemImpl operator=(const ElemImpl& e)
+			Elem operator=(const Elem& e)
 			{
 				this->data = e.data;
 				return this->data;

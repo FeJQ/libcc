@@ -8,7 +8,7 @@ namespace libcc
 	namespace crypto
 	{
 		using std::string;
-		class RsaImpl
+		class Rsa
 		{
 		public:
 			enum PaddingMode

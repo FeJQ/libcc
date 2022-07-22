@@ -1560,10 +1560,10 @@ void enableMemProtect(LPVOID lpAddr, ULONG uSize, ULONG uOldValue)
 }
 
 
-class InlineHookImpl
+class InlineHook
 {
 public:
-	InlineHookImpl()
+	InlineHook()
 	{
 		disableMemProtect(this->tramplineStart, sizeof(DETOUR_INST));
 		disableMemProtect(this->tramplineReturn, MAX_INSTUCTION_LEN + sizeof(DETOUR_INST) + sizeof(DETOUR_INST));

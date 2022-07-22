@@ -17,7 +17,7 @@ namespace libcc
 			ZerosPadding
 		};
 
-		class PaddingImpl
+		class Padding
 		{
 
 		public:
