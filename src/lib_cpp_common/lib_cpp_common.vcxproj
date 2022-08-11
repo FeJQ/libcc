@@ -101,6 +101,7 @@
     <LibraryPath>$(SolutionDir)../sdk/win32/network;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)..\build\temp\$(Configuration)</IntDir>
     <OutDir>$(SolutionDir)..\build\$(Configuration)</OutDir>
+    <IncludePath>$(SolutionDir)../sdk/include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -124,7 +125,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)../sdk/include;$(SolutionDir)../src/$(ProjectName);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../src/$(ProjectName);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>

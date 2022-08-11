@@ -8,6 +8,10 @@ namespace libcc
 		class Base64
 		{
 		public:
+			static string encode(char* input, size_t size)
+			{
+				return Base64::encode(string(input,size));
+			}
 			static string encode(string inputText)
 			{
 				size_t size = inputText.size();
@@ -37,6 +41,10 @@ namespace libcc
 				encodeText[m] = 0; // 0-termination!
 				encodeText.resize(m);
 				return encodeText;
+			}
+			static string decode(char* input)
+			{
+				return Base64::decode(string(input));
 			}
 			static string decode(string inputText)
 			{

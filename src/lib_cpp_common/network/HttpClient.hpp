@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "curl/curl.h"
+#include <curl/curl.h>
 #include <assert.h>
 
 
@@ -165,7 +165,7 @@ namespace libcc
 				errorBuffer.resize(CURL_ERROR_SIZE);
 			}
 
-			string data() { return responseContent; }
+			string getData() { return responseContent; }
 			void setData(string data) { this->responseContent = data; }
 
 			HttpStatus code() { return status; }
@@ -196,6 +196,8 @@ namespace libcc
 
 			bool failed() { return this->status != HttpStatus::OK; }
 			bool success() { return this->status == HttpStatus::OK; }
+
+			
 		private:
 			string responseContent;
 			string responseHeaderContent;
@@ -235,7 +237,9 @@ namespace libcc
 				code = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, this->response.getErrorMessageRef()->data());
 				assert(code == CURLE_OK);
 				// 指定编码
-				setAcceptEncoding("gzip, deflate");
+				//setAcceptEncoding("gzip, deflate");
+
+				setSslVerify(false);
 			};
 
 			HttpClient(const HttpClient& httpClient) = delete;
@@ -347,7 +351,8 @@ namespace libcc
 				this->response.clear();
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
 				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				//code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
 				assert(code == CURLE_OK);
 				curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, postData.size());
 				assert(code == CURLE_OK);
@@ -376,7 +381,8 @@ namespace libcc
 				this->response.clear();
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
 				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				//code = curl_easy_setopt(this->curl, CURLOPT_POST, 1);
+				code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
 				assert(code == CURLE_OK);
 
 				struct curl_httppost* form = NULL;
@@ -431,6 +437,26 @@ namespace libcc
 				this->response.setCode(status);
 				return this->response;
 			}
+
+			Response put(string url)
+			{
+				status = HttpStatus::OK;
+				this->response.clear();
+				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+				assert(code == CURLE_OK);
+				//code = curl_easy_setopt(this->curl, CURLOPT_PUT, 1);
+				code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+				assert(code == CURLE_OK);
+
+				code = curl_easy_perform(this->curl);
+				if (code != CURLE_OK)
+					return Response(code, curl_easy_strerror(code));
+				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
+				assert(code == CURLE_OK);
+				this->response.setCode(status);
+				return this->response;
+			}
+
 
 			/**
 			  * 开启并设置cookie的路径
@@ -563,7 +589,7 @@ namespace libcc
 				long long total = size * nmemb;
 				if (total != 0)
 				{
-					response->setData(response->data() + string((char*)data, total));
+					response->setData(response->getData() + string((char*)data, total));
 				}
 				else
 					return -1;
