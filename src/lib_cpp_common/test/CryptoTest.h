@@ -1,12 +1,14 @@
 #pragma once
 #include "test/BaseTest.h"
 #include "crypto/Base64.hpp"
+#include "crypto/UrlCoding.hpp"
 
 namespace libcc
 {
 	namespace test
 	{
 		using libcc::crypto::Base64;
+		using libcc::crypto::UrlCoding;
 		class CryptoTest :public BaseTest
 		{
 		public:
@@ -46,7 +48,12 @@ namespace libcc
 			}
 			bool urlCodingTest()
 			{
-				return false;
+				bool result = true;
+				string text = "https://itunes.apple.com/search?term=tik tok&country=us&entity=software&limit=50";
+				string encodeText = UrlCoding::encode(text);
+				string decodeText = UrlCoding::decode(encodeText);
+				result = text == decodeText;
+				return result;
 			}
 			bool xxhashTest()
 			{

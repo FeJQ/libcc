@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
-using namespace std;
+
 namespace libcc
 {
 	namespace crypto
 	{
+		using std::string;
 		class Base64
 		{
 		public:
@@ -55,11 +56,12 @@ namespace libcc
 				decodeText.resize((size / 4) * 3 + 3);
 				unsigned char* line;
 				int p = 0;
-				line = (unsigned char*)strtok((char*)inputText.data(), "\r\n\t ");
+				char* next_token;
+				line = (unsigned char*)strtok_s((char*)inputText.data(), "\r\n\t ", &next_token);
 				while (line) {
 					p += decodeBlock((unsigned char*)decodeText.data() + p, (const char*)line, strlen((char*)line));
 					// get next line of base64 encoded block
-					line = (unsigned char*)strtok(NULL, "\r\n\t ");
+					line = (unsigned char*)strtok_s(NULL, "\r\n\t ", &next_token);
 				}
 				decodeText[p] = 0;
 				decodeText.resize(p);

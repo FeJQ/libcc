@@ -6,6 +6,8 @@ namespace libcc
 {
 	namespace crypto
 	{
+		using std::string;
+		using std::string_view;
 		class Aes
 		{
 		public:
@@ -70,7 +72,7 @@ namespace libcc
 				}
 				return cipherText;
 			}
-			string decrypt(string inputText)
+			string decrypt(string_view inputText)
 			{
 				AES_KEY aesKey;
 				memset(&aesKey, 0, sizeof(aesKey));

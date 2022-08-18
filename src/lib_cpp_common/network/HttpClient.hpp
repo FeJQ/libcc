@@ -5,22 +5,15 @@
 #include <string>
 #include <curl/curl.h>
 #include <assert.h>
-
+#include <comdef.h>
 
 #ifdef _WIN32
-#include <comdef.h>
 #include <Winhttp.h>
 #elif defined __APPLE__
 #include <unistd.h>
 #include <sys/stat.h>
 #include <exception>
-#include <CFNetwork/CFNetwork.h>
-#include <CoreFoundation/CoreFoundation.h>
-#include <SystemConfiguration/SystemConfiguration.h>
-std::string stdStringFromCF(CFStringRef s);
-std::string  proxyFromDictionary(CFDictionaryRef dict,
-	CFStringRef enableKey, CFStringRef hostKey,
-	CFStringRef portKey);
+
 #endif
 
 // -----Win-----
@@ -73,10 +66,13 @@ std::string  proxyFromDictionary(CFDictionaryRef dict,
 
 
 
+
 namespace libcc
 {
 	namespace network
 	{
+		class HttpClientPool;
+
 		using std::string;
 		using std::map;
 		using std::vector;
@@ -128,11 +124,16 @@ namespace libcc
 			HTTPVersionNotSupported = 505
 		};
 
-		enum class HtmlEnctype
+		enum class HtmlEncType
 		{
 			application_x_www_urlencoded,
 			multipart_form_data,
 			text_plain
+		};
+		enum class HttpMethod
+		{
+			Get,
+			Post,
 		};
 
 		class Response
@@ -150,6 +151,7 @@ namespace libcc
 			}
 			Response(const Response& response)
 			{
+				this->clear();
 				this->responseContent = response.responseContent;
 				this->responseHeaderContent = response.responseHeaderContent;
 				this->responseHeaderMap = response.responseHeaderMap;
@@ -196,8 +198,6 @@ namespace libcc
 
 			bool failed() { return this->status != HttpStatus::OK; }
 			bool success() { return this->status == HttpStatus::OK; }
-
-			
 		private:
 			string responseContent;
 			string responseHeaderContent;
@@ -214,7 +214,6 @@ namespace libcc
 		public:
 			HttpClient() {
 				CURLcode code;
-
 				code = curl_global_init(CURL_GLOBAL_ALL);
 				assert(code == CURLE_OK);
 				this->curl = curl_easy_init();
@@ -236,10 +235,23 @@ namespace libcc
 				// 设置error buffer
 				code = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, this->response.getErrorMessageRef()->data());
 				assert(code == CURLE_OK);
-				// 指定编码
+				// 指定压缩算法
 				//setAcceptEncoding("gzip, deflate");
 
+				//curl_easy_setopt(curl, CURLOPT_COOKIEJAR, "cloud");
+				//curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "cloud");
+				//curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+				//code = curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 15);
+				//code = curl_easy_setopt(curl, CURLOPT_TIMEOUT, 20);
+				//code = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+				//code = curl_easy_setopt(curl, CURLOPT_FORBID_REUSE, 1);
+
+				setTimeout(3,0);
+
+				//setProxy("127.0.0.1:8888");
 				setSslVerify(false);
+				setCookiePath(TEXT("cookie"));
+				
 			};
 
 			HttpClient(const HttpClient& httpClient) = delete;
@@ -313,6 +325,7 @@ namespace libcc
 			}
 
 
+
 			/**
 			  * 发送Get请求
 			  *
@@ -326,7 +339,7 @@ namespace libcc
 				this->response.clear();
 				code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
 				assert(code == CURLE_OK);
-				code = curl_easy_setopt(this->curl, CURLOPT_POST, 0);
+				code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
 				assert(code == CURLE_OK);
 				code = curl_easy_perform(this->curl);
 				if (code != CURLE_OK)
@@ -347,6 +360,7 @@ namespace libcc
 			  */
 			Response post(string url, string postData)
 			{
+				//Sleep(3000);
 				status = HttpStatus::OK;
 				this->response.clear();
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
@@ -375,8 +389,9 @@ namespace libcc
 			  * @param formDataMap 表单数据，如{"key","value"}
 			  * @return Response
 			  */
-			Response post(string url, map<string, string> formDataMap, HtmlEnctype enctype = HtmlEnctype::multipart_form_data)
+			Response post(string url, map<string, string> formDataMap, HtmlEncType enctype = HtmlEncType::multipart_form_data)
 			{
+				//Sleep(3000);
 				status = HttpStatus::OK;
 				this->response.clear();
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
@@ -394,7 +409,7 @@ namespace libcc
 
 				switch (enctype)
 				{
-				case libcc::network::HtmlEnctype::application_x_www_urlencoded:
+				case libcc::network::HtmlEncType::application_x_www_urlencoded:
 				{
 					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
 					{
@@ -406,7 +421,7 @@ namespace libcc
 					assert(code == CURLE_OK);
 					break;
 				}
-				case libcc::network::HtmlEnctype::multipart_form_data:
+				case libcc::network::HtmlEncType::multipart_form_data:
 					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
 					{
 						curl_formadd(&form, &last, CURLFORM_COPYNAME, i->first.c_str(), CURLFORM_COPYCONTENTS, i->second.c_str(), CURLFORM_END);
@@ -414,7 +429,7 @@ namespace libcc
 					code = curl_easy_setopt(this->curl, CURLOPT_HTTPPOST, form);
 					assert(code == CURLE_OK);
 					break;
-				case libcc::network::HtmlEnctype::text_plain:
+				case libcc::network::HtmlEncType::text_plain:
 					for (auto i = formDataMap.begin(); i != formDataMap.end(); i++)
 					{
 						formData += (i == formDataMap.begin() ? "" : "&") + i->first + "=" + i->second;
@@ -444,8 +459,8 @@ namespace libcc
 				this->response.clear();
 				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
 				assert(code == CURLE_OK);
-				//code = curl_easy_setopt(this->curl, CURLOPT_PUT, 1);
 				code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+				//code = curl_easy_setopt(this->curl, CURLOPT_PUT, 1);
 				assert(code == CURLE_OK);
 
 				code = curl_easy_perform(this->curl);
@@ -457,6 +472,28 @@ namespace libcc
 				return this->response;
 			}
 
+			Response put(string url, string body)
+			{
+				status = HttpStatus::OK;
+				this->response.clear();
+				CURLcode code = curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+				assert(code == CURLE_OK);
+				code = curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+				//code = curl_easy_setopt(this->curl, CURLOPT_PUT, 1);
+				assert(code == CURLE_OK);
+				curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, body.size());
+				assert(code == CURLE_OK);
+				code = curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, body.data());
+				assert(code == CURLE_OK);
+
+				code = curl_easy_perform(this->curl);
+				if (code != CURLE_OK)
+					return Response(code, curl_easy_strerror(code));
+				code = curl_easy_getinfo(this->curl, CURLINFO_RESPONSE_CODE, &status);
+				assert(code == CURLE_OK);
+				this->response.setCode(status);
+				return this->response;
+			}
 
 			/**
 			  * 开启并设置cookie的路径
@@ -633,11 +670,17 @@ namespace libcc
 				}
 				return total;
 			}
-#ifdef _WIN32
+
+
+
+			/**
+			 * 查询系统代理
+			 *
+			 * @return libcc::network::string:
+			 */
 			string querySystemProxy()
 			{
 				string proxy;
-
 				WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxyConfig;
 
 				if (WinHttpGetIEProxyConfigForCurrentUser(&proxyConfig))
@@ -673,82 +716,70 @@ namespace libcc
 
 					}
 				}
-
 				return proxy;
 			}
-#elif defined __APPLE__
-            string querySystemProxy()
-            {
-                string proxy;
-                CFDictionaryRef dict = SCDynamicStoreCopyProxies(NULL);
-                if (!dict) {
-                    std::cout << "获取系统代理失败" << std::endl;
-                    return "";
-                }
-              
-                proxy = proxyFromDictionary(dict,
-                                    kSCPropNetProxiesHTTPEnable,
-                                    kSCPropNetProxiesHTTPProxy,
-                                    kSCPropNetProxiesHTTPPort);
-                if(proxy == ""){
-                    proxy = proxyFromDictionary(dict,
-                                        kSCPropNetProxiesHTTPSEnable,
-                                        kSCPropNetProxiesHTTPSProxy,
-                                        kSCPropNetProxiesHTTPSPort);
-                }
-                
-                return proxy;
-            }
-#endif
 		private:
+			friend class HttpClientPool;
+
 			Response response;
 			//string cookies;
 			CURL* curl;
 			HttpStatus status;
 		};
+
+		class HttpClientPool
+		{
+		public:
+			HttpClientPool()
+			{
+				curlm = curl_multi_init();
+				assert(this->curlm != NULL);
+
+			}
+			HttpClient& newHttpClient(void(*callBack)(bool success, Response response))
+			{
+				CURLMcode code;
+				HttpClient* httpClient = new HttpClient();
+				if (!proxy.empty())
+					httpClient->setProxy(proxy);
+
+				this->httpClientVector.push_back(httpClient);
+				code = curl_multi_add_handle(this->curlm, httpClient->curl);
+				assert(code == CURLM_OK);
+				return *httpClient;
+			}
+			void add(HttpClient httpClient)
+			{
+
+			}
+			void clear()
+			{
+
+			}
+			~HttpClientPool()
+			{
+				for (auto i = 0; i < httpClientVector.size(); i++)
+				{
+					delete httpClientVector[i];
+				}
+			}
+			/**
+			 * 给所有http实例设置代理
+			 *
+			 * @param string proxy:
+			 * @return libcc::network::HttpClientPool&:
+			 */
+			HttpClientPool& setProxy(string proxy)
+			{
+				for (auto i = 0; i < httpClientVector.size(); i++)
+				{
+					this->httpClientVector[i]->setProxy(proxy);
+				}
+			}
+		private:
+			CURLM* curlm;
+			vector<HttpClient*> httpClientVector;
+			string proxy;
+		};
 	}
 }
-
-
-#ifdef  __APPLE__
-std::string stdStringFromCF(CFStringRef s)
-    {
-    if (auto fastCString = CFStringGetCStringPtr(s, kCFStringEncodingUTF8))
-    {
-        return std::string(fastCString);
-    }
-    auto utf16length = CFStringGetLength(s);
-    auto maxUtf8len = CFStringGetMaximumSizeForEncoding(utf16length, kCFStringEncodingUTF8);
-    std::string converted(maxUtf8len, '\0');
-
-    CFStringGetCString(s,(char *)converted.data(),(int)maxUtf8len,kCFStringEncodingUTF8);
-    converted.resize(std::strlen(converted.data()));
-
-    return converted;
-    }
-    std::string  proxyFromDictionary(CFDictionaryRef dict,
-                                    CFStringRef enableKey, CFStringRef hostKey,
-                                         CFStringRef portKey)
-    {
-    CFNumberRef protoEnabled;
-    CFNumberRef protoPort;
-    CFStringRef protoHost;
-    if (enableKey
-        && (protoEnabled = (CFNumberRef)CFDictionaryGetValue(dict, enableKey))
-        && (protoHost = (CFStringRef)CFDictionaryGetValue(dict, hostKey))
-        && (protoPort = (CFNumberRef)CFDictionaryGetValue(dict, portKey))) {
-        std::string strHost = stdStringFromCF(protoHost);
-        int enabled;
-        if (CFNumberGetValue(protoEnabled, kCFNumberIntType, &enabled) && enabled) {
-            int port;
-            CFNumberGetValue(protoPort, kCFNumberIntType, &port);
-            if(enabled){
-                strHost += ":";
-                strHost += std::to_string (port);
-                return strHost;
-            }
-        }
-    }
-    return "";
-    }
-#endif

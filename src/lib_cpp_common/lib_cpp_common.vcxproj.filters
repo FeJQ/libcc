@@ -32,6 +32,9 @@
     <Filter Include="interface">
       <UniqueIdentifier>{d0cd9a20-d79d-4d32-a1c1-2b074bf62d91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="basic">
+      <UniqueIdentifier>{3e0094a2-2f45-421a-96c1-ae06b1acfccc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test\BaseTest.h">
@@ -96,6 +99,9 @@
     </ClInclude>
     <ClInclude Include="system\Process.hpp">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="basic\String.hpp">
+      <Filter>basic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

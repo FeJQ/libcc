@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="basic\String.hpp" />
     <ClInclude Include="crypto\Aes.hpp" />
     <ClInclude Include="crypto\Base64.hpp" />
     <ClInclude Include="crypto\Curve.hpp" />

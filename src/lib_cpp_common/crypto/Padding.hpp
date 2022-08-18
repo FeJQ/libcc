@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
 
-using namespace std;
+
 
 namespace libcc
 {
 	namespace crypto
 	{
+		using std::string;
 		enum class PaddingMode
 		{
 			NoPadding,
