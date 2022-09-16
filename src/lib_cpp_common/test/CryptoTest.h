@@ -9,6 +9,7 @@ namespace libcc
 	{
 		using libcc::crypto::Base64;
 		using libcc::crypto::UrlCoding;
+		using std::string;
 		class CryptoTest :public BaseTest
 		{
 		public:

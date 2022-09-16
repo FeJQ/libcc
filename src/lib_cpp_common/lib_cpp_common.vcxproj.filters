@@ -94,14 +94,14 @@
     <ClInclude Include="inject\RemoteThreadInjector.hpp">
       <Filter>inject</Filter>
     </ClInclude>
-    <ClInclude Include="network\HttpClient.hpp">
-      <Filter>network</Filter>
-    </ClInclude>
     <ClInclude Include="system\Process.hpp">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="basic\String.hpp">
       <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="network\HttpRequest.hpp">
+      <Filter>network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
